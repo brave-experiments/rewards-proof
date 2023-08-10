@@ -1,0 +1,4 @@
+[submodule "bulletproofs"]
+	path = bulletproofs
+	url = git@github.com:brave-experiments/bulletproofs.git
+	branch = boomerang

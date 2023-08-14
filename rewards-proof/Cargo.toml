@@ -1,0 +1,18 @@
+[package]
+name = "rewards-proof"
+version = "0.0.1"
+edition = "2018"
+authors = ["Ralph Ankele <rankele@brave.com>"]
+
+[dependencies]
+bulletproofs = { path="../bulletproofs", default-features = false, features = ["std", "avx2_backend", "yoloproofs"] }
+curve25519-dalek = { version = "2", default-features = false, features = ["u64_backend", "nightly", "serde", "alloc"] }
+merlin = { version = "2", default-features = false }
+rand = { version = "0.7" } 
+
+[dev-dependencies]
+criterion = { version = "0.4", features = ["html_reports"] }
+
+[[bench]]
+name = "proofs_benchmark"
+harness = false

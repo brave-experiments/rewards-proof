@@ -41,6 +41,22 @@ pub fn range_verify(ps_gen: &PedersenGens, bp_gen: &BulletproofGens, proof: Rang
     ).is_ok()
 }
 
+/// Verifies multiple range proofs
+pub fn range_verify_multiple(ps_gen: Vec<PedersenGens>, bp_gen: Vec<BulletproofGens>, proofs: Vec<RangeProof>, commitments: Vec<CompressedRistretto>, n: usize, number_of_proofs: usize) -> bool {
+    for i in 0..number_of_proofs {
+        // verify individual proofs
+        let result = range_verify(&ps_gen[i], &bp_gen[i], proofs[i].clone(), commitments[i], n);
+
+        // shortcut if any of the proofs is false, stop immediately
+        if result == false {
+            // only for benchmarking
+            panic!("Verifying {}'th range proof failed!", i);
+            //return false;
+        } 
+    }
+    return true;
+}
+
 /// Generates a linear proof
 pub fn linear_proof(ps_gen: &PedersenGens, bp_gen: &BulletproofGens, private_value: Vec<Scalar>, public_value: Vec<Scalar>, n: usize) -> (LinearProof, (Vec<RistrettoPoint>, RistrettoPoint, RistrettoPoint, CompressedRistretto)) {
     let mut rng = rand::thread_rng();
@@ -86,3 +102,23 @@ pub fn linear_verify(proof: LinearProof, public_value: Vec<Scalar>, g: Vec<Ristr
         public_value).is_ok()
 }
 
+/// Verifies multiple linear proofs
+pub fn linear_verify_multiple(proofs: Vec<LinearProof>, public_values: Vec<Vec<Scalar>>, commitments: Vec<(Vec<RistrettoPoint>, RistrettoPoint, RistrettoPoint, CompressedRistretto)>, number_of_proofs: usize) -> bool {
+    for i in 0..number_of_proofs {
+        // verify individual proofs
+        let result = linear_verify(proofs[i].clone(), 
+                         public_values[i].clone(), 
+                                    commitments[i].0.clone(), 
+                                    commitments[i].1, 
+                                    commitments[i].2, 
+                                    commitments[i].3);
+
+        // shortcut if any of the proofs is false, stop immediately
+        if result == false {
+            // only for benchmarking
+            panic!("Verifying {}'th linear proof failed!", i);
+            //return false;
+        } 
+    }
+    return true;
+}

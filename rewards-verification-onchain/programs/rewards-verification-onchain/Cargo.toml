@@ -1,0 +1,23 @@
+[package]
+name = "rewards-verification-onchain"
+version = "0.1.0"
+description = "Verification of reward proofs in a smart contract"
+edition = "2021"
+authors = ["Ralph Ankele <rankele@brave.com>"]
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "rewards_verification_onchain"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.28.0"
+rewards-proof = { path="../../../rewards-proof"}
+bulletproofs = { path="../../../bulletproofs" }
+curve25519-dalek = { version = "2", default-features = false, features = ["u64_backend", "nightly", "serde", "alloc"] }

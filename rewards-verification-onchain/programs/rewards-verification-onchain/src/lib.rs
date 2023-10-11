@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use bulletproofs::{BulletproofGens, PedersenGens}; // do we need them or can we refactor it away?
+use bulletproofs::{BulletproofGens, PedersenGens};
 use curve25519_dalek::scalar::Scalar; // curve25519 should be available as a system program?
 use rewards_proof::api::{rewards_proof_verification, rewards_proof_setup};
 
@@ -28,15 +28,10 @@ pub mod rewards_verification_onchain {
             .map(|u64_value| Scalar::from(u64_value))
             .collect();
 
-        // generate generators here to get program compiling - FIX ME
-        let (pedersen_gens, bulletproof_gens) = rewards_proof_setup(incentive_catalog_size);
-
         // verify proofs
         state.verified = rewards_proof_verification(
-            //data.pedersen_generators,
-            //data.bulletproof_generators,
-            pedersen_gens, 
-            bulletproof_gens, 
+            data.pedersen_generators,
+            data.bulletproof_generators,
             data.range_proof,
             data.range_commitments,
             data.linear_proof,
@@ -64,10 +59,10 @@ pub struct ProofVerificationState {
     pub verified: bool,
 }
 
-#[derive(AnchorSerialize, AnchorDeserialize, Eq, PartialEq, Clone, Debug)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct Data {
-    //pub pedersen_generators: Vec<PedersenGens>,
-    //pub bulletproof_generators: Vec<BulletproofGens>,
+    pub pedersen_generators: Vec<PedersenGens>,
+    pub bulletproof_generators: Vec<BulletproofGens>,
     pub range_proof: Vec<u8>,
     pub linear_proof: Vec<u8>,
     pub range_commitments: Vec<u8>,

@@ -21,3 +21,8 @@ anchor-lang = "0.28.0"
 rewards-proof = { path="../../../rewards-proof"}
 bulletproofs = { path="../../../bulletproofs" }
 curve25519-dalek = { version = "2", default-features = false, features = ["u64_backend", "nightly", "serde", "alloc"] }
+
+[dev-dependencies]
+solana-program-test = { version = "1.17.1"}
+anchor-spl = { version = "0.28.0" }
+solana-sdk = { version = "" }

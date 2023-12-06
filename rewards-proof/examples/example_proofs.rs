@@ -7,10 +7,11 @@ use rewards_proof::api::{
     linear_proof, linear_verify, range_proof, range_verify, range_verify_multiple,
     rewards_proof_generation, rewards_proof_setup, setup, rewards_proof_verification,
 };
+use std::mem;
 
 #[allow(dead_code)]
 fn linear_proof_example() {
-    let n: usize = 64;
+    let n: usize = 256;
     // a and b are the vectors for which we want to prove c = <a,b>
     // a is a private vector, b is a public vector
     let mut rng = rand::thread_rng();
@@ -22,7 +23,11 @@ fn linear_proof_example() {
     // Prover
     let (proof, commitments) = linear_proof(&ps_gen, &bp_gen, a, b.clone(), n);
 
-    let proof_in_bytes = proof.to_bytes().len() * 32;
+    //let proof_in_bytes = proof.to_bytes().len() * 32;
+    let proof_vector = proof.to_bytes();
+    //println!("linearproof: {:?}", proof_vector);
+    let proof_in_bytes = mem::size_of_val(&*proof_vector);
+    println!("Size of linearproof: {proof_in_bytes} bytes");
     let proof_in_kbytes = proof_in_bytes / 1024;
     println!("Size of linearproof: {proof_in_kbytes} kB");
 
@@ -47,12 +52,15 @@ fn linear_proof_example() {
 fn range_proof_example() {
     // currently we check a range of 0..2^8 -> 0..256
     let sum_of_counters: u64 = 254;
-    let (ps_gen, bp_gen) = setup(64);
+    let (ps_gen, bp_gen) = setup(256);
 
     // Prove
     let (proof, commitments) = range_proof(&ps_gen, &bp_gen, sum_of_counters, 8);
 
-    let proof_in_bytes = proof.to_bytes().len() * 32;
+    //let proof_in_bytes = proof.to_bytes().len() * 32;
+    let proof_vector = proof.to_bytes();
+    let proof_in_bytes = mem::size_of_val(&*proof_vector);
+    println!("Size of rangeproof: {proof_in_bytes} bytes");
     let proof_in_kbytes = proof_in_bytes / 1024;
     println!("Size of rangeproof: {proof_in_kbytes} kB");
 
@@ -158,8 +166,8 @@ fn rewards_proof_example() {
 }
 
 fn main() {
-    //range_proof_example();
-    //linear_proof_example();
+    range_proof_example();
+    linear_proof_example();
     //verify_multiple_range_proofs(10);
-    rewards_proof_example();
+    //rewards_proof_example();
 }

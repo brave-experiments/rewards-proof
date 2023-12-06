@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "bulletproofs",
+    "rewards-proof",
+]

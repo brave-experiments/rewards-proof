@@ -77,8 +77,8 @@ pub fn rewards_proof_generation(
 
 /// Verifies the rewards proofs
 pub fn rewards_proof_verification(
-    pedersen_gens: Vec<PedersenGens>,
-    bulletproof_gens: Vec<BulletproofGens>,
+    pedersen_gens: &Vec<PedersenGens>,
+    bulletproof_gens: &Vec<BulletproofGens>,
     range_proof: Vec<u8>,
     range_proof_commitments: Vec<u8>,
     linear_proof: Vec<u8>,
@@ -128,15 +128,44 @@ pub fn rewards_proof_verification(
     return true;
 }
 
+/// Verifies the rewards proofs
+pub fn rewards_proof_verification_multiple(
+    pedersen_gens: &Vec<PedersenGens>,
+    bulletproof_gens: &Vec<BulletproofGens>,
+    range_proof: Vec<Vec<u8>>,
+    range_proof_commitments: Vec<Vec<u8>>,
+    linear_proof: Vec<Vec<u8>>,
+    public_value: Vec<Scalar>,
+    linear_proof_commitments: Vec<(Vec<u8>, Vec<u8>, Vec<u8>, Vec<u8>)>,
+    number_of_proofs: usize,
+) -> bool {
+    for i in 0..number_of_proofs {
+        // verify individual range proofs
+        let result = rewards_proof_verification(
+            &pedersen_gens,
+            &bulletproof_gens,
+            range_proof[i].clone(),
+            range_proof_commitments[i].clone(),
+            linear_proof[i].clone(),
+            public_value.clone(),
+            linear_proof_commitments[i].clone(),
+        );
+        if result == false {
+            panic!("Verifying {}'th rewards proof failed!", i);
+        }
+    }
+    return true;
+}
+
 /// Setup for Pedersen Generators and BulletProofs Generators
-pub fn setup(gen_capacity: usize) -> (PedersenGens, BulletproofGens) {
+fn setup(gen_capacity: usize) -> (PedersenGens, BulletproofGens) {
     let pedersen_generators = PedersenGens::default();
     let bulletproof_generators = BulletproofGens::new(gen_capacity, 1);
     (pedersen_generators, bulletproof_generators)
 }
 
 /// Generates a proof and the commitments for a range proof
-pub fn range_proof(
+fn range_proof(
     ps_gen: &PedersenGens,
     bp_gen: &BulletproofGens,
     value: u64,
@@ -160,7 +189,7 @@ pub fn range_proof(
 }
 
 /// Verifies a range proof
-pub fn range_verify(
+fn range_verify(
     ps_gen: &PedersenGens,
     bp_gen: &BulletproofGens,
     proof: RangeProof,
@@ -173,8 +202,8 @@ pub fn range_verify(
         .is_ok()
 }
 
-/// Verifies multiple range proofs
-pub fn range_verify_multiple(
+// Verifies multiple range proofs
+/*fn range_verify_multiple(
     ps_gen: Vec<PedersenGens>,
     bp_gen: Vec<BulletproofGens>,
     proofs: Vec<RangeProof>,
@@ -194,10 +223,10 @@ pub fn range_verify_multiple(
         }
     }
     return true;
-}
+}*/
 
 /// Generates a linear proof
-pub fn linear_proof(
+fn linear_proof(
     ps_gen: &PedersenGens,
     bp_gen: &BulletproofGens,
     private_value: Vec<Scalar>,
@@ -248,7 +277,7 @@ pub fn linear_proof(
 }
 
 /// Verifies a linear proof
-pub fn linear_verify(
+fn linear_verify(
     proof: LinearProof,
     public_value: Vec<Scalar>,
     g: Vec<RistrettoPoint>,
@@ -262,8 +291,8 @@ pub fn linear_verify(
         .is_ok()
 }
 
-/// Verifies multiple linear proofs
-pub fn linear_verify_multiple(
+// Verifies multiple linear proofs
+/*fn linear_verify_multiple(
     proofs: Vec<LinearProof>,
     public_values: Vec<Vec<Scalar>>,
     commitments: Vec<(
@@ -293,4 +322,4 @@ pub fn linear_verify_multiple(
         }
     }
     return true;
-}
+}*/

@@ -1,15 +1,12 @@
 extern crate rewards_proof;
 
-use bulletproofs::{BulletproofGens, PedersenGens, RangeProof};
-use curve25519_dalek::{ristretto::CompressedRistretto, scalar::Scalar};
+use curve25519_dalek::scalar::Scalar;
 use rand::Rng;
 use rewards_proof::api::{
-    linear_proof, linear_verify, range_proof, range_verify, range_verify_multiple,
-    rewards_proof_generation, rewards_proof_setup, setup, rewards_proof_verification,
+    rewards_proof_generation, rewards_proof_setup, rewards_proof_verification,
 };
-use std::mem;
 
-#[allow(dead_code)]
+/*#[allow(dead_code)]
 fn linear_proof_example() {
     let n: usize = 256;
     // a and b are the vectors for which we want to prove c = <a,b>
@@ -46,9 +43,9 @@ fn linear_proof_example() {
     } else {
         println!("Linear Proof cannot be verified!");
     }
-}
+}*/
 
-#[allow(dead_code)]
+/*#[allow(dead_code)]
 fn range_proof_example() {
     // currently we check a range of 0..2^8 -> 0..256
     let sum_of_counters: u64 = 254;
@@ -72,9 +69,9 @@ fn range_proof_example() {
     } else {
         println!("Range Proof cannot be verified!");
     }
-}
+}*/
 
-#[allow(dead_code)]
+/*#[allow(dead_code)]
 fn verify_multiple_range_proofs(number_of_proofs: usize) {
     // preprocessing
     let value: u64 = 254;
@@ -112,7 +109,7 @@ fn verify_multiple_range_proofs(number_of_proofs: usize) {
     } else {
         println!("Range Proof cannot be verified!");
     }
-}
+}*/
 
 #[allow(dead_code)]
 fn rewards_proof_example() {
@@ -121,14 +118,18 @@ fn rewards_proof_example() {
     let (pedersen_gens, bulletproof_gens) = rewards_proof_setup(incentive_catalog_size);
 
     // public value
-    let policy_vector: Vec<u64> = (0..incentive_catalog_size).map(|_| rng.gen_range(0, 10)).collect();
+    let policy_vector: Vec<u64> = (0..incentive_catalog_size)
+        .map(|_| rng.gen_range(0, 10))
+        .collect();
     let policy_vector_scalar: Vec<Scalar> = policy_vector
         .clone()
         .into_iter()
         .map(|u64_value| Scalar::from(u64_value))
         .collect();
     // private value
-    let state: Vec<u64> = (0..incentive_catalog_size).map(|_| rng.gen_range(0, 10)).collect();
+    let state: Vec<u64> = (0..incentive_catalog_size)
+        .map(|_| rng.gen_range(0, 10))
+        .collect();
     let state_scalar: Vec<Scalar> = state
         .clone()
         .into_iter()
@@ -158,7 +159,15 @@ fn rewards_proof_example() {
     );
 
     // verify rewards proof
-    if rewards_proof_verification(pedersen_gens, bulletproof_gens, range_proof, range_comm, linear_proof, policy_vector_scalar, linear_comm) {
+    if rewards_proof_verification(
+        &pedersen_gens,
+        &bulletproof_gens,
+        range_proof,
+        range_comm,
+        linear_proof,
+        policy_vector_scalar,
+        linear_comm,
+    ) {
         println!("Rewards proof verification successfull!");
     } else {
         println!("Rewards proof verification failed!");
@@ -166,8 +175,8 @@ fn rewards_proof_example() {
 }
 
 fn main() {
-    range_proof_example();
-    linear_proof_example();
+    //range_proof_example();
+    //linear_proof_example();
     //verify_multiple_range_proofs(10);
-    //rewards_proof_example();
+    rewards_proof_example();
 }
